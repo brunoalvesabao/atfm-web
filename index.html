@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CONDOC ATFM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF3F5; --panel:#FFFFFF; --ink:#16263A; --muted:#5A6B7D;
+  --line:#CBD6DE; --magenta:#9B2466; --magenta-soft:#F5E4EE; --blue:#1F5F99; --blue-soft:#E1ECF6;
+  --green:#2E7355; --focus:#1F5F99;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1A26; --panel:#17263A; --ink:#E6EDF3; --muted:#9AAAB9;
+    --line:#2A3D52; --magenta:#E77DB4; --magenta-soft:#3A1E32; --blue:#7DB4E7; --blue-soft:#1C3450;
+    --green:#7CC9A4; --focus:#7DB4E7;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1A26; --panel:#17263A; --ink:#E6EDF3; --muted:#9AAAB9;
+  --line:#2A3D52; --magenta:#E77DB4; --magenta-soft:#3A1E32; --blue:#7DB4E7; --blue-soft:#1C3450;
+  --green:#7CC9A4; --focus:#7DB4E7;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+
+header{background:var(--ink);color:var(--paper);padding:28px 0 72px;position:relative;overflow:hidden}
+header svg.rings{position:absolute;right:-60px;top:-60px;width:320px;height:320px;opacity:.18;pointer-events:none}
+h1{font:700 clamp(1.7rem,5vw,2.6rem)/1.1 "Barlow Semi Condensed",sans-serif;margin:0 0 6px;letter-spacing:.01em}
+header a.folder{display:inline-block;margin-top:14px;color:var(--paper);border:1px solid currentColor;border-radius:8px;padding:6px 12px;text-decoration:none;font-weight:600}
+header p.sub{font:600 1.05rem "Barlow Semi Condensed",sans-serif;opacity:.9;margin:0 0 10px}
+header p{margin:0;max-width:52ch;opacity:.8}
+
+.search{margin-top:-44px;position:relative;z-index:2}
+.search-box{background:var(--panel);border:2px solid var(--magenta);border-radius:14px;display:flex;align-items:center;gap:10px;padding:4px 14px;box-shadow:0 10px 30px -18px rgba(10,20,40,.5)}
+.search-box input{flex:1;border:0;background:transparent;padding:14px 0;font-size:1.1rem;outline:none;min-width:0}
+.search-box svg{flex:none;color:var(--magenta)}
+.hint{font-size:.85rem;color:var(--muted);margin:8px 2px 0}
+
+.filters{margin:22px 0 8px;display:grid;gap:12px}
+.row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.row-title{font:600 .9rem "Barlow Semi Condensed",sans-serif;color:var(--muted);margin:0 0 4px}
+.chip{flex:none;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--panel)}
+.chip.org{border-style:dashed;border-color:var(--magenta);color:var(--magenta);font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;border-radius:6px}
+.chip.org[aria-pressed="true"]{background:var(--magenta);color:var(--panel);border-style:solid}
+
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px}
+.count{font-weight:600}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;cursor:pointer}
+a.btn{text-decoration:none;display:inline-block}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:var(--panel)}
+.btn:hover{border-color:var(--blue)}
+
+ul.list{list-style:none;margin:0 0 60px;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+li.doc{display:grid;grid-template-columns:auto 1fr auto;gap:4px 14px;padding:14px 16px;border-top:1px solid var(--line);align-items:start}
+li.doc:first-child{border-top:0}
+.type{font:700 .78rem "Barlow Semi Condensed",sans-serif;padding:3px 8px;border-radius:5px;margin-top:3px;min-width:62px;text-align:center}
+.t-CAOp{background:var(--magenta-soft);color:var(--magenta)}
+.t-MOp{background:var(--blue-soft);color:var(--blue)}
+.t-Setores{background:#E4F2EA;color:var(--green)}
+:root[data-theme="dark"] .t-Setores{background:#1B3A2C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .t-Setores{background:#1B3A2C}}
+.t-Norma{background:var(--line);color:var(--ink)}
+.t-Anexo{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.title{font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.meta{grid-column:2;font-size:.88rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.orgs{display:flex;gap:4px;flex-wrap:wrap}
+.org{font:600 .78rem "Barlow Semi Condensed",sans-serif;color:var(--magenta);border:1px dashed var(--magenta);border-radius:4px;padding:0 5px;cursor:pointer;background:none}
+.acts{display:flex;gap:6px;align-items:center;grid-row:1/span 2;grid-column:3}
+.icon{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--panel);cursor:pointer;display:grid;place-items:center;padding:0}
+.icon.on{color:#C88A00;border-color:#C88A00}
+a.open.ghost{background:transparent;color:var(--blue);border:1px solid var(--blue)}
+a.open{background:var(--blue);color:var(--panel);text-decoration:none;border-radius:8px;padding:7px 12px;font-weight:600;white-space:nowrap}
+.nolink{font-size:.85rem;color:var(--blue);background:none;border:1px dashed var(--blue);border-radius:8px;padding:6px 10px;cursor:pointer;white-space:nowrap}
+.doclink{color:var(--blue);font-weight:500}
+.note{grid-column:2;font-size:.85rem;background:var(--paper);border-left:3px solid var(--blue);padding:4px 8px;border-radius:0 6px 6px 0}
+.empty{padding:32px 16px;text-align:center;color:var(--muted)}
+@media (max-width:620px){
+  li.doc{grid-template-columns:1fr;gap:6px}
+  .meta,.doclink{color:var(--blue);font-weight:500}
+.note{grid-column:1}
+  .acts{grid-row:auto;grid-column:1}
+  .type{justify-self:start;margin:0}
+}
+
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);width:min(520px,94vw);padding:20px}
+dialog::backdrop{background:rgba(10,20,35,.55)}
+dialog h2{font:700 1.3rem "Barlow Semi Condensed",sans-serif;margin:0 0 12px}
+label{display:block;font-weight:500;margin:10px 0 4px}
+dialog input,dialog select,dialog textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:var(--paper)}
+.dlg-acts{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.small{font-size:.85rem;color:var(--muted)}
+footer{color:var(--muted);font-size:.85rem;padding:0 0 40px}
+@media (prefers-reduced-motion:no-preference){.chip,.btn,.icon{transition:background .15s,border-color .15s}}
+</style>
+</head>
+<body>
+<header>
+  <svg class="rings" viewBox="0 0 200 200" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="100" cy="100" r="30"/><circle cx="100" cy="100" r="55" stroke-dasharray="6 5"/><circle cx="100" cy="100" r="80"/><circle cx="100" cy="100" r="98" stroke-dasharray="2 4"/><path d="M100 0v200M0 100h200"/></g></svg>
+  <div class="wrap">
+    <h1>CONDOC ATFM</h1>
+    <p class="sub">Consulta de Documentos da Gerência de Fluxo</p>
+    <p>Cartas de acordo, modelos operacionais, setorização e normas em um só lugar. Digite o órgão, o número ou o assunto.</p>
+    <a class="folder" href="https://drive.google.com/drive/folders/1iIYwAR1NoAIp6_rWORsaFtHE3cqLxKhO" target="_blank" rel="noopener">Abrir pasta DOC PSGF 2025 no Drive</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="search">
+    <div class="search-box">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Ex.: ACC-CW, RCR pista, ILS, 100-44…" autocomplete="off" aria-label="Buscar documentos">
+    </div>
+    <p class="hint">Atalho: pressione <b>/</b> para buscar. A busca ignora acentos e maiúsculas.</p>
+  </div>
+
+  <section class="filters">
+    <div><p class="row-title">Tipo de documento</p><div class="row" id="types"></div></div>
+    <div><p class="row-title">Órgão</p><div class="row" id="orgs"></div></div>
+  </section>
+
+  <div class="bar">
+    <span><span class="count" id="count"></span> <span class="small" id="status"></span></span>
+    <div class="tools">
+      <button class="btn" id="favBtn" aria-pressed="false">★ Só favoritos</button>
+      <a class="btn primary" id="addLink" href="#" target="_blank" rel="noopener" hidden>+ Adicionar documento</a>
+    </div>
+  </div>
+
+  <ul class="list" id="list"></ul>
+</main>
+
+<footer class="wrap">
+  A lista é carregada da planilha de documentos da equipe. Sempre confira no Drive/boletim a versão vigente antes de aplicar um procedimento.
+</footer>
+
+<script>
+// ===== CONFIGURAÇÃO =====
+// 1) Link CSV da planilha publicada (Arquivo > Compartilhar > Publicar na Web > CSV)
+const PLANILHA_CSV = "";
+// 2) Link do Google Forms (ou da própria planilha) para adicionar documentos
+const LINK_ADICIONAR = "";
+// ========================
+
+const FOLDER = "https://drive.google.com/drive/folders/1iIYwAR1NoAIp6_rWORsaFtHE3cqLxKhO";
+const TYPES = {
+  CAOp:   "Carta de acordo",
+  MOp:    "Modelo operacional",
+  Setores:"Setorização",
+  Norma:  "ICA / MCA",
+  Anexo:  "Anexo / tabela"
+};
+
+// Lista interna: usada se a planilha não estiver configurada ou não carregar.
+const BASE = [
+  {id:"caop-br-1", url:"https://drive.google.com/file/d/11XwoqCVkxpsOK2bYQKEbJhngM5sGit2v/view", tipo:"CAOp", titulo:"CAOp nº 1 – TWR-BR, APP-BR e Inframerica: reserva de pista", orgaos:["TWR-BR","APP-BR","Inframerica"], ano:2021, ref:"Bol nº 205 de 04.11.2021", tags:"reserva pista brasilia"},
+  {id:"caop-br-2",  url:"https://drive.google.com/file/d/18fWKmPq-Qfgg_Ke2CBQGrLwHvJ3NDnkn/view", tipo:"CAOp", titulo:"CAOp nº 2 – APP-BR, TWR-BR e Inframerica: vistoria e impraticabilidade de pista", orgaos:["APP-BR","TWR-BR","Inframerica"], ano:2023, ref:"Bol nº 107 de 14.06.2023", tags:"pista impraticavel vistoria brasilia"},
+  {id:"caop-br-4",  url:"https://drive.google.com/file/d/1xDxNYZ4AY3h4MM__gDzrqwsLpBDufxLm/view", tipo:"CAOp", titulo:"CAOp nº 4 – TWR-BR, APP-BR e Inframerica: procedimento de avaliação e RCR de pista", orgaos:["TWR-BR","APP-BR","Inframerica"], ano:2021, ref:"Bol nº 232 de 14.12.2021", tags:"rcr condicao pista runway condition report brasilia"},
+  {id:"caop-br-9",  url:"https://drive.google.com/file/d/1z0xLFrYX0HSyeuv_-N4toSMFN64uc_KZ/view", tipo:"CAOp", titulo:"CAOp nº 9 – APP-BR e TWR-BR", orgaos:["APP-BR","TWR-BR"], ano:2025, ref:"Bol nº 66 de 08.04.2025", tags:"brasilia"},
+  {id:"caop-10-3",  url:"https://drive.google.com/file/d/1oqiBvchMfgv2w8EbP4XWblgSRx-CJ9Vl/view", doc:"https://docs.google.com/document/d/149J-0GGufVY0M5vJDTRJFLktaubZURGav-b_Fe_XdJw/edit", tipo:"CAOp", titulo:"CAOp 10-3 – ACC-RE, APP-RF e TWR-RF", orgaos:["ACC-RE","APP-RF","TWR-RF"], ano:2024, tags:"recife"},
+  {id:"caop-10-21", url:"https://drive.google.com/file/d/12iDT4Qmg_ZgEmjfBOxdH4EdyiIuokn07/view", tipo:"CAOp", titulo:"CAOp 10-21 – ACC-RE e ACC-CW, CAIS-RE, APP-RJ e TWR-VT", orgaos:["ACC-RE","ACC-CW","CAIS-RE","APP-RJ","TWR-VT"], ano:2025, tags:"recife rio vitoria"},
+  {id:"caop-100-6", url:"https://drive.google.com/file/d/1zPDKQKJI5S05eY3Dhc6uQhIdl8dPPi9a/view", tipo:"CAOp", titulo:"CAOp 100-6 – ACC-CW e ACC-AZ (sem item)", orgaos:["ACC-CW","ACC-AZ"], ano:2021, tags:"curitiba amazonico"},
+  {id:"caop-100-34",url:"https://drive.google.com/file/d/1g7qIR7SwTH9uWyLIHJe8wG2-DujBNLdn/view", tipo:"CAOp", titulo:"CAOp 100-34 – APP-CT e ACC-CW", orgaos:["APP-CT","ACC-CW"], ano:2024, tags:"curitiba"},
+  {id:"caop-100-35",url:"https://drive.google.com/file/d/14wcWJTzKB5P13BnkqWasKHTJZ9ZDQ-Te/view", tipo:"CAOp", titulo:"CAOp 100-35 – ACC-CW e APP-PA (modificação de página 2023)", orgaos:["ACC-CW","APP-PA"], ano:2021, ref:"Modificação de página em 2023", tags:"porto alegre curitiba"},
+  {id:"caop-100-44",url:"https://drive.google.com/file/d/1gkurlAoocDFR4jUyShqZlEoD62AvrOrc/view", tipo:"CAOp", titulo:"CAOp 100-44 – ACC-CW, ACC-AZ, COpM 2, COpM 4 e DTCEA-CG", orgaos:["ACC-CW","ACC-AZ","COpM 2","COpM 4","DTCEA-CG"], ano:2024, tags:"campo grande militar defesa"},
+
+  {id:"mop-app-rj", url:"https://drive.google.com/file/d/1xi5qGPUOfp1q-DH7KSNnS1F76Z36eYjx/view", tipo:"MOp", titulo:"Modelo operacional APP-RJ 2024.1", orgaos:["APP-RJ"], ano:2024, ref:"Aceito em 25.10.2024", tags:"rio de janeiro"},
+  {id:"mo-twr-an",  url:"https://drive.google.com/file/d/1tAyzJwK7SCYJogR6yHJaqnoezOgUl7ws/view", doc:"https://docs.google.com/document/d/1yiil7TFtdq0AiEgFiHv0tyfpFgCgmHnHpwMGQ6qMaqM/edit", tipo:"MOp", titulo:"Manual operacional Torre de Controle Anápolis (TWR-AN)", orgaos:["TWR-AN"], ano:2025, tags:"anapolis"},
+  {id:"mop-acc-cw", url:"https://drive.google.com/file/d/1-R02vV9U96R7cWB1NGFztz0T5xxol3i5/view", doc:"https://docs.google.com/document/d/1JFekRoQQdPAyS7ohYvbAUNtyUYjlkfGS5oBR3dS8PtQ/edit", tipo:"MOp", titulo:"Modelo operacional ACC-CW 2025.01", orgaos:["ACC-CW"], ano:2025, tags:"curitiba"},
+  {id:"mop-acc-re", url:"https://drive.google.com/file/d/1pQw0otrCm7rSpQjifQdRH47WBUSq2T2p/view", tipo:"MOp", titulo:"Modelo operacional do ACC Recife 2024_01 (04/07/2024)", orgaos:["ACC-RE"], ano:2024, tags:"recife"},
+  {id:"mop-app-rf", url:"https://drive.google.com/file/d/1liGCo5tY7i8MdrRt8AMkTQwGwqNVHz1d/view", tipo:"MOp", titulo:"Modelo operacional do APP Recife 2024_01 (04/07/2024)", orgaos:["APP-RF"], ano:2024, tags:"recife"},
+  {id:"mop-twr-cg", url:"https://drive.google.com/file/d/1e-vnfa6oxHt71mCP-uPiOtDlJdtMvbye/view", tipo:"MOp", titulo:"Modelo operacional TWR-CG 2024.01", orgaos:["TWR-CG"], ano:2024, tags:"campo grande"},
+  {id:"mop-twr-ct", url:"https://drive.google.com/file/d/1EDgldJOOjFRj3DbYczeyLZdDYERpnavh/view", tipo:"MOp", titulo:"Modelo operacional TWR-CT 2025-01", orgaos:["TWR-CT"], ano:2025, tags:"curitiba"},
+  {id:"mop-twr-pa", url:"https://drive.google.com/file/d/1zIctCbdBcsV-MyoJiexL0VN267hL0Nsc/view", tipo:"MOp", titulo:"Modelo operacional TWR-PA 2025.01", orgaos:["TWR-PA"], ano:2025, tags:"porto alegre"},
+  {id:"mop-app-an", url:"https://drive.google.com/file/d/1vxlfXAIx8jBgKET-haaJVaGKIiwwNIcm/view", tipo:"MOp", titulo:"Modelo operacional Controle de Aproximação Anápolis (APP-AN)", orgaos:["APP-AN"], ano:2025, tags:"anapolis"},
+  {id:"mop-app-be", url:"https://drive.google.com/file/d/1y_Jzyl0eWo4Oq-Ew4iuW-kdEmZ68Swtz/view", tipo:"MOp", titulo:"Modelo operacional do APP-BE 2025.02", orgaos:["APP-BE"], ano:2025, tags:"belem"},
+  {id:"mop-app-sp", url:"https://drive.google.com/file/d/1z4BOc9thlatasmOFtK1vDgOW97lpRlbf/view", tipo:"MOp", titulo:"Modelo operacional APP-SP", orgaos:["APP-SP"], tags:"sao paulo"},
+  {id:"mop-app-wk", url:"https://drive.google.com/file/d/1iY2-yDJYtgxd1K2a7Yzx5mnnmh1g8TiS/view", tipo:"MOp", titulo:"Modelo operacional APP SBWK 2025-01", orgaos:["SBWK"], ano:2025, tags:""},
+  {id:"mop-twr-ps", url:"https://drive.google.com/file/d/1QPiCQxHWUGsMs-9XbHuLNiXR6HqsFtkh/view", tipo:"MOp", titulo:"Modelo operacional TWR SBPS 2025-01", orgaos:["SBPS"], ano:2025, tags:"porto seguro"},
+  {id:"sbkp-2023",  url:"https://drive.google.com/file/d/1OedMCdFV3BQD_vM_uluAU-W7BVvq0Iee/view", tipo:"MOp", titulo:"SBKP 2023", orgaos:["SBKP"], ano:2023, ref:"Confirmar o tipo de documento", tags:"campinas viracopos"},
+
+  {id:"set-sp-1",   url:"https://drive.google.com/file/d/1JHczkbkLoBs1sNUx4cVyOkKY4URykqZj/view", tipo:"Setores", titulo:"Setores APP-SP", orgaos:["APP-SP"], tags:"setorizacao divisao setores sao paulo imagem"},
+  {id:"set-sp-2",   url:"https://drive.google.com/file/d/1JANEk_tJ9DqzK3mpE-feBYV2UYXHYyf-/view", tipo:"Setores", titulo:"Setores APP-SP – Figura 2", orgaos:["APP-SP"], tags:"setorizacao divisao setores sao paulo imagem"},
+  {id:"set-sp-3",   url:"https://drive.google.com/file/d/1KvMmXveBIiKAn93ZMmfFfaEzCE_0JSpG/view", tipo:"Setores", titulo:"Setores APP-SP – Figura 3", orgaos:["APP-SP"], tags:"setorizacao divisao setores sao paulo imagem"},
+
+  {id:"ica-53-1",   url:"https://drive.google.com/file/d/13EnWbVKjdGZfTed7zb6emVo25oFn6GzL/view", tipo:"Norma", titulo:"ICA 53-1 – Serviços de NOTAM", orgaos:[], tags:"notam aviso aeronavegantes"},
+  {id:"ica-100-16", url:"https://drive.google.com/file/d/1EjuhCHzjLbqneXZMsDlLm1PVzYOsql-Y/view", tipo:"Norma", titulo:"ICA 100-16 – Sistema de Pouso por Instrumentos (ILS)", orgaos:[], tags:"ils aproximacao precisao categoria"},
+  {id:"mca-100-26", url:"https://drive.google.com/file/d/1K-ECwqvpJn0Kjb513TDuBxQPgbU-h95B/view", tipo:"Norma", titulo:"MCA 100-26 – Capacidade de setor ATC", orgaos:[], tags:"capacidade setor atc fluxo atfm"},
+
+  {id:"anexo-h-1",  url:"https://drive.google.com/file/d/1D2CW5Z1a0uq2qiVK8_YRX82ccjiI4LwF/view", tipo:"Anexo", titulo:"Anexo H – parte 1", orgaos:[], ref:"Imagem: confirmar a qual documento pertence", tags:"imagem"},
+  {id:"anexo-h-2",  url:"https://drive.google.com/file/d/1pt63jSjNeIhiLIr14p06GFMqU20GBowY/view", tipo:"Anexo", titulo:"Anexo H – parte 2", orgaos:[], ref:"Imagem: confirmar a qual documento pertence", tags:"imagem"},
+  {id:"tab-sep-re", url:"https://drive.google.com/file/d/1v_VDxBjMhnk_OXnZB5Ydcy2Ppx5NTzuv/view", tipo:"Anexo", titulo:"Tabela de separação ACC-RE / DACAR (MOp ACC Recife 2024)", orgaos:["ACC-RE","DACAR"], ano:2024, tags:"separacao recife tabela imagem"}
+];
+
+const KEY = "condoc-atfm-v2";
+let store = {favs:[], cache:null};
+try { const x = JSON.parse(localStorage.getItem(KEY)); if (x) store = Object.assign(store, x); } catch(e){}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e){} };
+
+let DOCS = store.cache || BASE;
+const state = {q:"", tipo:null, org:null, favOnly:false};
+const norm = s => (s==null?"":String(s)).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => /^https:\/\//i.test(u||"") ? u : "";
+
+function parseCSV(text){
+  const rows=[]; let row=[], cell="", q=false;
+  for (let i=0;i<text.length;i++){
+    const c=text[i];
+    if (q){ if (c=='"'){ if (text[i+1]=='"'){cell+='"';i++;} else q=false; } else cell+=c; }
+    else if (c=='"') q=true;
+    else if (c==','){ row.push(cell); cell=""; }
+    else if (c=='\n'){ row.push(cell); rows.push(row); row=[]; cell=""; }
+    else if (c!='\r') cell+=c;
+  }
+  if (cell || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
+
+function tipoKey(v){
+  const n = norm(v);
+  if (n.includes("carta") || n.includes("caop")) return "CAOp";
+  if (n.includes("setor")) return "Setores";
+  if (n.includes("ica") || n.includes("mca") || n.includes("norma") || n.includes("regul")) return "Norma";
+  if (n.includes("anexo") || n.includes("tabela")) return "Anexo";
+  return "MOp";
+}
+const slug = t => norm(t).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+
+function fromSheet(text){
+  const rows = parseCSV(text.replace(/^\uFEFF/,"")).filter(r => r.some(c => c.trim()));
+  if (rows.length < 2) throw new Error("Planilha vazia");
+  const head = rows[0].map(norm);
+  const col = (...names) => head.findIndex(h => names.some(n => h.startsWith(n)));
+  const c = {tipo:col("tipo"), titulo:col("titulo"), orgaos:col("orgao"), ano:col("ano"), ref:col("referencia"), url:col("link docs")>=0 ? head.findIndex(h=>h==="link") : col("link"), doc:col("link docs"), tags:col("palavras")};
+  if (c.titulo < 0) throw new Error("Coluna Título não encontrada");
+  const get = (r,i) => i>=0 ? (r[i]||"").trim() : "";
+  const seen = {};
+  return rows.slice(1).map(r => {
+    const titulo = get(r,c.titulo); if (!titulo) return null;
+    let id = slug(titulo); if (seen[id]) id += "-" + (++seen[id]); else seen[id]=1;
+    return {id, titulo, tipo:tipoKey(get(r,c.tipo)),
+      orgaos:get(r,c.orgaos).split(/[,;]/).map(x=>x.trim().toUpperCase()).filter(Boolean).map(x=>x==="INFRAMERICA"?"Inframerica":x),
+      ano:parseInt(get(r,c.ano))||undefined, ref:get(r,c.ref), url:safeUrl(get(r,c.url)), doc:safeUrl(get(r,c.doc)), tags:get(r,c.tags)};
+  }).filter(Boolean);
+}
+
+async function load(){
+  if (LINK_ADICIONAR){ $("addLink").href = LINK_ADICIONAR; $("addLink").hidden = false; }
+  if (!PLANILHA_CSV){ $("status").textContent = "· lista interna"; return; }
+  $("status").textContent = "· atualizando…";
+  try {
+    const r = await fetch(PLANILHA_CSV + (PLANILHA_CSV.includes("?")?"&":"?") + "t=" + Date.now(), {cache:"no-store"});
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    DOCS = fromSheet(await r.text());
+    store.cache = DOCS; save();
+    $("status").textContent = "· atualizado da planilha";
+  } catch(e){
+    $("status").textContent = store.cache ? "· sem conexão com a planilha, mostrando última versão" : "· planilha indisponível, mostrando lista interna";
+  }
+  renderChips(); render();
+}
+
+function renderChips(){
+  $("types").innerHTML = [`<button class="chip" data-t="" aria-pressed="${!state.tipo}">Todos</button>`]
+    .concat(Object.entries(TYPES).map(([k,v]) => `<button class="chip" data-t="${k}" aria-pressed="${state.tipo===k}">${v}</button>`)).join("");
+  const orgs = [...new Set(DOCS.flatMap(d => d.orgaos))].sort((a,b)=>a.localeCompare(b));
+  $("orgs").innerHTML = [`<button class="chip org" data-o="" aria-pressed="${!state.org}">Todos</button>`]
+    .concat(orgs.map(o => `<button class="chip org" data-o="${esc(o)}" aria-pressed="${state.org===o}">${esc(o)}</button>`)).join("");
+}
+
+function render(){
+  const words = norm(state.q).split(/\s+/).filter(Boolean);
+  const order = Object.keys(TYPES);
+  const list = DOCS.filter(d => {
+    if (state.tipo && d.tipo !== state.tipo) return false;
+    if (state.org && !d.orgaos.includes(state.org)) return false;
+    if (state.favOnly && !store.favs.includes(d.id)) return false;
+    const hay = norm([d.titulo, d.orgaos.join(" "), d.ano, d.ref, d.tags, TYPES[d.tipo]].join(" "));
+    return words.every(w => hay.includes(w));
+  }).sort((a,b) => (store.favs.includes(b.id) - store.favs.includes(a.id)) || order.indexOf(a.tipo) - order.indexOf(b.tipo) || (b.ano||0)-(a.ano||0));
+
+  $("count").textContent = list.length === 1 ? "1 documento" : `${list.length} documentos`;
+  if (!list.length){
+    $("list").innerHTML = `<li class="empty">Nada encontrado. Tente só o código do órgão (ex.: “CW”) ou limpe os filtros.</li>`;
+    return;
+  }
+  const label = {CAOp:"CAOp", MOp:"MOp", Setores:"Setores", Norma:"ICA/MCA", Anexo:"Anexo"};
+  $("list").innerHTML = list.map(d => {
+    const fav = store.favs.includes(d.id);
+    return `<li class="doc">
+      <span class="type t-${d.tipo}">${label[d.tipo]}</span>
+      <div class="title">${esc(d.titulo)}</div>
+      <div class="acts">
+        <button class="icon ${fav?"on":""}" data-fav="${esc(d.id)}" aria-label="${fav?"Remover dos favoritos":"Adicionar aos favoritos"}" title="Favorito">${fav?"★":"☆"}</button>
+        ${d.url ? `<a class="open" href="${esc(d.url)}" target="_blank" rel="noopener">Abrir</a>`
+                : `<a class="open ghost" href="${FOLDER}" target="_blank" rel="noopener" title="Sem link na planilha; abre a pasta">Pasta</a>`}
+      </div>
+      <div class="meta">
+        ${d.orgaos.length ? `<span class="orgs">${d.orgaos.map(o=>`<button class="org" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</span>` : ""}
+        ${d.ano ? `<span>${d.ano}</span>` : ""}
+        ${d.ref ? `<span>${esc(d.ref)}</span>` : ""}
+        ${d.doc ? `<a class="doclink" href="${esc(d.doc)}" target="_blank" rel="noopener">Versão editável (Docs)</a>` : ""}
+      </div>
+    </li>`;
+  }).join("");
+}
+
+$("q").addEventListener("input", e => { state.q = e.target.value; render(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "/" && !["INPUT","TEXTAREA"].includes(document.activeElement.tagName)){ e.preventDefault(); $("q").focus(); }
+});
+$("types").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if(!b) return; state.tipo = b.dataset.t || null; renderChips(); render(); });
+document.addEventListener("click", e => {
+  const o = e.target.closest("[data-o]");
+  if (o){
+    const v = o.dataset.o || null;
+    state.org = o.classList.contains("chip") ? v : (state.org === v ? null : v);
+    renderChips(); render(); return;
+  }
+  const f = e.target.closest("[data-fav]");
+  if (f){ const id=f.dataset.fav; store.favs = store.favs.includes(id) ? store.favs.filter(x=>x!==id) : store.favs.concat(id); save(); render(); }
+});
+$("favBtn").addEventListener("click", e => { state.favOnly = !state.favOnly; e.currentTarget.setAttribute("aria-pressed", state.favOnly); e.currentTarget.classList.toggle("primary", state.favOnly); render(); });
+
+renderChips(); render(); load();
+</script>
+</body>
+</html>
