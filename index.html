@@ -26,6 +26,7 @@
   --green:#7CC9A4; --focus:#7DB4E7;
 }
 *{box-sizing:border-box}
+[hidden]{display:none !important}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
@@ -36,6 +37,11 @@ header svg.rings{position:absolute;right:-60px;top:-60px;width:320px;height:320p
 h1{font:700 clamp(1.7rem,5vw,2.6rem)/1.1 "Barlow Semi Condensed",sans-serif;margin:0 0 6px;letter-spacing:.01em}
 header a.folder{display:inline-block;margin-top:14px;color:var(--paper);border:1px solid currentColor;border-radius:8px;padding:6px 12px;text-decoration:none;font-weight:600}
 header p.sub{font:600 1.05rem "Barlow Semi Condensed",sans-serif;opacity:.9;margin:0 0 10px}
+.nav{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.navlink{color:var(--paper);border:1px solid currentColor;border-radius:8px;padding:7px 14px;text-decoration:none;font-weight:600;position:relative;z-index:1}
+.navlink:hover{background:rgba(255,255,255,.12)}
+.firlink{margin-left:8px;color:var(--blue);font-weight:600;font-size:.9rem;text-decoration:none}
+.firlink:hover{text-decoration:underline}
 header p{margin:0;max-width:52ch;opacity:.8}
 
 .search{margin-top:-44px;position:relative;z-index:2}
@@ -113,7 +119,8 @@ footer{color:var(--muted);font-size:.85rem;padding:0 0 40px;text-align:center}
   <div class="wrap">
     <h1>ATFM WEB</h1>
     <p class="sub">Consulta de Documentos para o Gerente de Fluxo</p>
-    <p>Cartas de acordo, modelos operacionais, setorização e normas em um só lugar.</p>
+    <p>Cartas de acordo, modelos operacionais, setorização e normas em um só lugar. Digite o órgão, o número ou o assunto.</p>
+    <nav class="nav"><a class="navlink" href="mapa-fir.html">🌐 Mapa de FIR</a></nav>
   </div>
 </header>
 
@@ -121,7 +128,7 @@ footer{color:var(--muted);font-size:.85rem;padding:0 0 40px;text-align:center}
   <div class="search">
     <div class="search-box">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="Ex.: ACC-CW, CAOp, ILS, ICA 100-44…" autocomplete="off" aria-label="Buscar documentos">
+      <input id="q" type="search" placeholder="Ex.: ACC-CW, RCR pista, ILS, 100-44…" autocomplete="off" aria-label="Buscar documentos">
     </div>
   </div>
 
@@ -131,7 +138,7 @@ footer{color:var(--muted);font-size:.85rem;padding:0 0 40px;text-align:center}
   </section>
 
   <div class="bar">
-    <span><span class="count" id="count"></span> <span class="small" id="status"></span></span>
+    <span><span class="count" id="count"></span> <span class="small" id="status"></span><a class="firlink" id="firLink" href="#" hidden></a></span>
     <div class="tools">
       <button class="btn" id="favBtn" aria-pressed="false">★ Só favoritos</button>
       <a class="btn primary" id="addLink" href="#" target="_blank" rel="noopener" hidden>+ Adicionar documento</a>
@@ -199,10 +206,14 @@ const BASE = [
   {id:"ica-100-16", url:"https://drive.google.com/file/d/1EjuhCHzjLbqneXZMsDlLm1PVzYOsql-Y/view", tipo:"Norma", titulo:"ICA 100-16 – Sistema de Pouso por Instrumentos (ILS)", orgaos:[], tags:"ils aproximacao precisao categoria"},
   {id:"mca-100-26", url:"https://drive.google.com/file/d/1K-ECwqvpJn0Kjb513TDuBxQPgbU-h95B/view", tipo:"Norma", titulo:"MCA 100-26 – Capacidade de setor ATC", orgaos:[], tags:"capacidade setor atc fluxo atfm"},
 
+  {id:"pc-fir-br", url:"https://drive.google.com/file/d/1ruEpEgnY4vVinoesmG-Io1UgU1ISh89e/view", tipo:"Conting", titulo:"Plano de Contingência Nacional e Internacional para as FIR do Brasil", orgaos:[], tags:"contingencia plano fir brasil"},
   {id:"anexo-h-1",  url:"https://drive.google.com/file/d/1D2CW5Z1a0uq2qiVK8_YRX82ccjiI4LwF/view", tipo:"Anexo", titulo:"Anexo H – parte 1", orgaos:[], ref:"Imagem: confirmar a qual documento pertence", tags:"imagem"},
   {id:"anexo-h-2",  url:"https://drive.google.com/file/d/1pt63jSjNeIhiLIr14p06GFMqU20GBowY/view", tipo:"Anexo", titulo:"Anexo H – parte 2", orgaos:[], ref:"Imagem: confirmar a qual documento pertence", tags:"imagem"},
   {id:"tab-sep-re", url:"https://drive.google.com/file/d/1v_VDxBjMhnk_OXnZB5Ydcy2Ppx5NTzuv/view", tipo:"Anexo", titulo:"Tabela de separação ACC-RE / DACAR (MOp ACC Recife 2024)", orgaos:["ACC-RE","DACAR"], ano:2024, tags:"separacao recife tabela imagem"}
 ];
+
+// ACC responsável por cada FIR brasileira (usado para ligar com o Mapa de FIR)
+const ACC_FIR = {"ACC-AZ":"SBAZ","ACC-BS":"SBBS","ACC-CW":"SBCW","ACC-RE":"SBRE","ACC-AO":"SBAO"};
 
 const KEY = "condoc-atfm-v2";
 let store = {favs:[], cache:null};
@@ -211,6 +222,12 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } c
 
 let DOCS = store.cache || BASE;
 const state = {q:"", tipo:null, org:null, favOnly:false};
+// Filtros vindos do link (ex.: index.html?org=ACC-CW ou index.html?q=RCR)
+try {
+  const params = new URLSearchParams(location.search);
+  if (params.get("org")) state.org = params.get("org").trim().toUpperCase();
+  if (params.get("q")) state.q = params.get("q");
+} catch(e){}
 const norm = s => (s==null?"":String(s)).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -279,7 +296,7 @@ async function load(){
 function renderChips(){
   $("types").innerHTML = [`<button class="chip" data-t="" aria-pressed="${!state.tipo}">Todos</button>`]
     .concat(Object.entries(TYPES).map(([k,v]) => `<button class="chip" data-t="${k}" aria-pressed="${state.tipo===k}">${v}</button>`)).join("");
-  const orgs = [...new Set(DOCS.flatMap(d => d.orgaos))].sort((a,b)=>a.localeCompare(b));
+  const orgs = [...new Set(DOCS.flatMap(d => d.orgaos).concat(state.org ? [state.org] : []))].sort((a,b)=>a.localeCompare(b));
   $("orgs").innerHTML = orgs.map(o => `<button class="chip org" data-o="${esc(o)}" aria-pressed="${state.org===o}">${esc(o)}</button>`).join("");
 }
 
@@ -295,8 +312,14 @@ function render(){
   }).sort((a,b) => (store.favs.includes(b.id) - store.favs.includes(a.id)) || order.indexOf(a.tipo) - order.indexOf(b.tipo) || (b.ano||0)-(a.ano||0));
 
   $("count").textContent = list.length === 1 ? "1 documento" : `${list.length} documentos`;
+  const fir = state.org && ACC_FIR[state.org];
+  $("firLink").hidden = !fir;
+  if (fir){ $("firLink").href = "mapa-fir.html#" + fir; $("firLink").textContent = "· Ver FIR " + fir + " no mapa"; }
   if (!list.length){
-    $("list").innerHTML = `<li class="empty">Nada encontrado. Tente só o código do órgão (ex.: “CW”) ou limpe os filtros.</li>`;
+    const onlyOrg = state.org && !state.q.trim() && !state.tipo && !state.favOnly;
+    $("list").innerHTML = onlyOrg
+      ? `<li class="empty">Ainda não há documentos do ${esc(state.org)} cadastrados. Adicione pela planilha.</li>`
+      : `<li class="empty">Nada encontrado. Tente só o código do órgão (ex.: “CW”) ou limpe os filtros.</li>`;
     return;
   }
   const label = {CAOp:"CAOp", MOp:"MOp", Manual:"Manual", Conting:"Contingência", Setores:"Setores", Norma:"ICA/MCA", Anexo:"Anexo"};
@@ -337,6 +360,7 @@ document.addEventListener("click", e => {
 });
 $("favBtn").addEventListener("click", e => { state.favOnly = !state.favOnly; e.currentTarget.setAttribute("aria-pressed", state.favOnly); e.currentTarget.classList.toggle("primary", state.favOnly); render(); });
 
+$("q").value = state.q;
 renderChips(); render(); load();
 </script>
 </body>
