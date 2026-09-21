@@ -67,28 +67,27 @@ header p{margin:0;max-width:52ch;opacity:.8}
 .search-box input{flex:1;border:0;background:transparent;padding:14px 0;font-size:1.1rem;outline:none;min-width:0}
 .search-box svg{flex:none;color:var(--magenta)}
 
-.filters{margin:22px 0 8px;display:grid;gap:12px}
+.filters{margin:22px 0 8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,240px));gap:14px 16px;align-items:start}
 .filters>div{min-width:0}
-.row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
 .row-title{font:600 .9rem "Barlow Semi Condensed",sans-serif;color:var(--muted);margin:0 0 4px}
-.chip{flex:none;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
-.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--panel)}
 
-.org-filter{position:relative;max-width:360px}
-.org-select{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;border:1px dashed var(--magenta);color:var(--magenta);background:var(--panel);border-radius:8px;padding:9px 12px;font:600 .92rem "Barlow Semi Condensed",sans-serif;cursor:pointer;text-align:left}
-.org-select:hover{background:var(--magenta-soft)}
-.org-select[aria-expanded="true"]{border-style:solid;background:var(--magenta-soft)}
-.org-select .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.org-select .caret{flex:none;transition:transform .15s}
-.org-select[aria-expanded="true"] .caret{transform:rotate(180deg)}
-.org-panel{position:absolute;z-index:20;top:calc(100% + 6px);left:0;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 16px 32px -18px rgba(10,20,40,.4);padding:8px;max-height:min(340px,60vh);display:flex;flex-direction:column;gap:6px}
-.org-panel[hidden]{display:none}
-.org-panel input[type="search"]{flex:none;width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--paper);color:inherit}
-.org-options{overflow-y:auto;display:flex;flex-direction:column;gap:2px}
-.org-opt{display:block;width:100%;text-align:left;border:0;background:none;border-radius:6px;padding:8px 10px;cursor:pointer;color:inherit;font:inherit}
-.org-opt:hover{background:var(--blue-soft)}
-.org-opt[aria-selected="true"]{background:var(--blue);color:var(--panel);font-weight:600}
-.org-opt[hidden]{display:none}
+.dd-filter{position:relative;max-width:280px}
+.dd-select{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;border:1px solid var(--magenta);color:var(--magenta);background:var(--panel);border-radius:8px;padding:8px 12px;font:600 .9rem "Barlow Semi Condensed",sans-serif;cursor:pointer;text-align:left}
+.dd-select:hover{background:var(--magenta-soft)}
+.dd-select[aria-expanded="true"]{background:var(--magenta-soft)}
+.dd-select .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd-select .caret{flex:none;transition:transform .15s}
+.dd-select[aria-expanded="true"] .caret{transform:rotate(180deg)}
+.dd-panel{position:absolute;z-index:20;top:calc(100% + 6px);left:0;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 14px 28px -16px rgba(10,20,40,.4);padding:6px;max-height:min(240px,40vh);display:flex;flex-direction:column;gap:6px}
+.dd-panel[hidden]{display:none}
+.dd-panel input[type="search"]{flex:none;width:100%;border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--paper);color:inherit;font-size:.9rem}
+.dd-options{overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.dd-opt{display:block;width:100%;text-align:left;border:0;background:none;border-radius:6px;padding:7px 10px;cursor:pointer;color:inherit;font:inherit;font-size:.92rem}
+.dd-opt:hover{background:var(--blue-soft)}
+.dd-opt[aria-selected="true"]{background:var(--blue);color:var(--panel);font-weight:600}
+.dd-opt[hidden]{display:none}
+.active{grid-column:1/-1}
+@media (max-width:620px){.dd-filter{max-width:100%}}
 
 .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px}
 .count{font-weight:600}
@@ -118,8 +117,6 @@ li.doc:first-child{border-top:0}
 .orgs{display:flex;gap:4px;flex-wrap:wrap}
 .org{font:600 .78rem "Barlow Semi Condensed",sans-serif;color:var(--magenta);border:1px dashed var(--magenta);border-radius:4px;padding:0 5px;cursor:pointer;background:none}
 .acts{display:flex;gap:6px;align-items:center;grid-row:1/span 2;grid-column:3}
-.icon{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--panel);cursor:pointer;display:grid;place-items:center;padding:0}
-.icon.on{color:#C88A00;border-color:#C88A00}
 a.open{background:var(--blue);color:var(--panel);text-decoration:none;border-radius:8px;padding:7px 12px;font-weight:600;white-space:nowrap}
 .doclink{color:var(--blue);font-weight:500}
 .empty{padding:32px 16px;text-align:center;color:var(--muted)}
@@ -132,7 +129,7 @@ a.open{background:var(--blue);color:var(--panel);text-decoration:none;border-rad
 
 .small{font-size:.85rem;color:var(--muted)}
 footer{color:var(--muted);font-size:.85rem;padding:0 0 40px;text-align:center}
-@media (prefers-reduced-motion:no-preference){.chip,.btn,.icon{transition:background .15s,border-color .15s}}
+@media (prefers-reduced-motion:no-preference){.dd-select,.dd-opt,.btn{transition:background .15s,border-color .15s}}
 </style>
 </head>
 <body>
@@ -163,17 +160,28 @@ footer{color:var(--muted);font-size:.85rem;padding:0 0 40px;text-align:center}
   </div>
 
   <section class="filters">
-    <div><p class="row-title">Tipo de documento</p><div class="row" id="types"></div></div>
     <div>
-      <p class="row-title">Órgãos</p>
-      <div class="org-filter">
-        <button type="button" class="org-select" id="orgSelect" aria-haspopup="listbox" aria-expanded="false">
-          <span class="label" id="orgSelectLabel">Todos os órgãos</span>
+      <p class="row-title">Tipo de documento</p>
+      <div class="dd-filter" id="typeFilter">
+        <button type="button" class="dd-select" id="typeSelect" aria-haspopup="listbox" aria-expanded="false">
+          <span class="label" id="typeSelectLabel">Todos</span>
           <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
         </button>
-        <div class="org-panel" id="orgPanel" hidden>
+        <div class="dd-panel" id="typePanel" hidden>
+          <div class="dd-options" id="typeOptions" role="listbox" aria-label="Tipo de documento"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="row-title">Órgãos</p>
+      <div class="dd-filter" id="orgFilter">
+        <button type="button" class="dd-select" id="orgSelect" aria-haspopup="listbox" aria-expanded="false">
+          <span class="label" id="orgSelectLabel">Todos</span>
+          <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="dd-panel" id="orgPanel" hidden>
           <input type="search" id="orgFilterInput" placeholder="Filtrar órgão…" aria-label="Filtrar órgãos" autocomplete="off">
-          <div class="org-options" id="orgOptions" role="listbox" aria-label="Órgãos"></div>
+          <div class="dd-options" id="orgOptions" role="listbox" aria-label="Órgãos"></div>
         </div>
       </div>
     </div>
@@ -183,7 +191,6 @@ footer{color:var(--muted);font-size:.85rem;padding:0 0 40px;text-align:center}
   <div class="bar">
     <span><span class="count" id="count"></span> <span class="small" id="status"></span><a class="firlink" id="firLink" href="#" hidden></a></span>
     <div class="tools">
-      <button class="btn" id="favBtn" aria-pressed="false">★ Só favoritos</button>
       <a class="btn primary" id="addLink" href="#" target="_blank" rel="noopener" hidden>+ Adicionar documento</a>
     </div>
   </div>
@@ -259,12 +266,12 @@ const BASE = [
 const ACC_FIR = {"ACC-AZ":"SBAZ","ACC-BS":"SBBS","ACC-CW":"SBCW","ACC-RE":"SBRE","ACC-AO":"SBAO"};
 
 const KEY = "condoc-atfm-v2";
-let store = {favs:[], cache:null};
+let store = {cache:null};
 try { const x = JSON.parse(localStorage.getItem(KEY)); if (x) store = Object.assign(store, x); } catch(e){}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e){} };
 
 let DOCS = store.cache || BASE;
-const state = {q:"", tipo:null, org:null, favOnly:false};
+const state = {q:"", tipo:null, org:null};
 // Filtros vindos do link (ex.: index.html?org=ACC-CW ou index.html?q=RCR)
 try {
   const params = new URLSearchParams(location.search);
@@ -352,40 +359,47 @@ function renderActive(){
   if (state.q.trim()) pills.push(`<button class="pill" data-clear="q">Busca: <b>${esc(state.q.trim())}</b><i>✕</i></button>`);
   if (state.tipo) pills.push(`<button class="pill" data-clear="tipo">Tipo: <b>${esc(TYPES[state.tipo])}</b><i>✕</i></button>`);
   if (state.org) pills.push(`<button class="pill" data-clear="org">Órgãos: <b>${esc(state.org)}</b><i>✕</i></button>`);
-  if (state.favOnly) pills.push(`<button class="pill" data-clear="fav">Só favoritos<i>✕</i></button>`);
   $("active").hidden = !pills.length;
   $("active").innerHTML = pills.join("") + (pills.length > 1 ? `<button class="clear" data-clear="all">Limpar filtros</button>` : "");
 }
 
-function renderOrgOptions(){
-  const orgs = [...new Set(DOCS.flatMap(d => d.orgaos).concat(state.org ? [state.org] : []))].sort((a,b)=>a.localeCompare(b));
-  $("orgOptions").innerHTML = [`<button type="button" class="org-opt" data-o="" role="option" aria-selected="${!state.org}">Todos os órgãos</button>`]
-    .concat(orgs.map(o => `<button type="button" class="org-opt" data-o="${esc(o)}" role="option" aria-selected="${state.org===o}">${esc(o)}</button>`)).join("");
+function renderTypeOptions(){
+  $("typeOptions").innerHTML = [`<button type="button" class="dd-opt" data-t="" role="option" aria-selected="${!state.tipo}">Todos</button>`]
+    .concat(Object.entries(TYPES).map(([k,v]) => `<button type="button" class="dd-opt" data-t="${k}" role="option" aria-selected="${state.tipo===k}">${esc(v)}</button>`)).join("");
 }
 
-function openOrgPanel(){
-  $("orgPanel").hidden = false;
-  $("orgSelect").setAttribute("aria-expanded", "true");
-  $("orgFilterInput").value = "";
-  filterOrgOptions();
-  $("orgFilterInput").focus();
+function renderOrgOptions(){
+  const orgs = [...new Set(DOCS.flatMap(d => d.orgaos).concat(state.org ? [state.org] : []))].sort((a,b)=>a.localeCompare(b));
+  $("orgOptions").innerHTML = [`<button type="button" class="dd-opt" data-o="" role="option" aria-selected="${!state.org}">Todos</button>`]
+    .concat(orgs.map(o => `<button type="button" class="dd-opt" data-o="${esc(o)}" role="option" aria-selected="${state.org===o}">${esc(o)}</button>`)).join("");
 }
-function closeOrgPanel(){
-  $("orgPanel").hidden = true;
-  $("orgSelect").setAttribute("aria-expanded", "false");
+
+function closeAllPanels(){
+  [["typeSelect","typePanel"], ["orgSelect","orgPanel"]].forEach(([selId, panelId]) => {
+    $(panelId).hidden = true;
+    $(selId).setAttribute("aria-expanded", "false");
+  });
+}
+function openPanel(selId, panelId){
+  closeAllPanels();
+  $(panelId).hidden = false;
+  $(selId).setAttribute("aria-expanded", "true");
+  const search = $(panelId).querySelector('input[type="search"]');
+  if (search){ search.value = ""; filterOrgOptions(); search.focus(); }
+}
+function togglePanel(selId, panelId){
+  $(panelId).hidden ? openPanel(selId, panelId) : closeAllPanels();
 }
 function filterOrgOptions(){
   const q = norm($("orgFilterInput").value);
-  $("orgOptions").querySelectorAll(".org-opt").forEach(btn => { btn.hidden = !!q && !norm(btn.textContent).includes(q); });
+  $("orgOptions").querySelectorAll(".dd-opt").forEach(btn => { btn.hidden = !!q && !norm(btn.textContent).includes(q); });
 }
 
 function renderChips(){
-  $("types").innerHTML = [`<button class="chip" data-t="" aria-pressed="${!state.tipo && !state.org}" title="Mostrar todos os documentos">Todos</button>`]
-    .concat(Object.entries(TYPES).map(([k,v]) => `<button class="chip" data-t="${k}" aria-pressed="${state.tipo===k}">${v}</button>`)).join("");
+  renderTypeOptions();
   renderOrgOptions();
-  $("orgSelectLabel").textContent = state.org || "Todos os órgãos";
-  $("favBtn").setAttribute("aria-pressed", state.favOnly);
-  $("favBtn").classList.toggle("primary", state.favOnly);
+  $("typeSelectLabel").textContent = state.tipo ? TYPES[state.tipo] : "Todos";
+  $("orgSelectLabel").textContent = state.org || "Todos";
   renderActive();
 }
 
@@ -395,33 +409,27 @@ function render(){
   const list = DOCS.filter(d => {
     if (state.tipo && d.tipo !== state.tipo) return false;
     if (state.org && !d.orgaos.includes(state.org)) return false;
-    if (state.favOnly && !store.favs.includes(d.id)) return false;
     const hay = norm([d.titulo, d.orgaos.join(" "), d.ano, d.ref, d.tags, TYPES[d.tipo]].join(" "));
     return words.every(w => hay.includes(w));
-  }).sort((a,b) => (store.favs.includes(b.id) - store.favs.includes(a.id)) || order.indexOf(a.tipo) - order.indexOf(b.tipo) || (b.ano||0)-(a.ano||0));
+  }).sort((a,b) => order.indexOf(a.tipo) - order.indexOf(b.tipo) || (b.ano||0)-(a.ano||0));
 
   $("count").textContent = list.length === 1 ? "1 documento" : `${list.length} documentos`;
   const fir = state.org && ACC_FIR[state.org];
   $("firLink").hidden = !fir;
   if (fir){ $("firLink").href = "mapa-fir.html#" + fir; $("firLink").textContent = "· Ver FIR " + fir + " no mapa"; }
   if (!list.length){
-    const onlyOrg = state.org && !state.q.trim() && !state.tipo && !state.favOnly;
-    const onlyFav = state.favOnly && !state.org && !state.q.trim() && !state.tipo;
+    const onlyOrg = state.org && !state.q.trim() && !state.tipo;
     $("list").innerHTML = onlyOrg
       ? `<li class="empty">Ainda não há documentos do ${esc(state.org)} cadastrados. Adicione pela planilha.</li>`
-      : onlyFav
-      ? `<li class="empty">Você ainda não marcou favoritos. Toque na ☆ de um documento.</li>`
       : `<li class="empty">Nada encontrado com esses filtros. <button class="clear" data-clear="all">Limpar filtros</button></li>`;
     return;
   }
   const label = {CAOp:"CAOp", MOp:"MOp", Manual:"Manual", Conting:"Contingência", Setores:"Setores", Norma:"ICA/MCA", Anexo:"Anexo"};
   $("list").innerHTML = list.map(d => {
-    const fav = store.favs.includes(d.id);
     return `<li class="doc">
       <span class="type t-${d.tipo}">${label[d.tipo]}</span>
       <div class="title">${esc(d.titulo)}</div>
       <div class="acts">
-        <button class="icon ${fav?"on":""}" data-fav="${esc(d.id)}" aria-label="${fav?"Remover dos favoritos":"Adicionar aos favoritos"}" title="Favorito">${fav?"★":"☆"}</button>
         ${d.url ? `<a class="open" href="${esc(d.url)}" target="_blank" rel="noopener">Abrir</a>`
                 : `<span class="small">Sem link</span>`}
       </div>
@@ -439,18 +447,13 @@ let qTimer;
 $("q").addEventListener("input", e => { state.q = e.target.value; render(); renderActive(); clearTimeout(qTimer); qTimer = setTimeout(syncURL, 400); });
 document.addEventListener("keydown", e => {
   if (e.key === "/" && !["INPUT","TEXTAREA"].includes(document.activeElement.tagName)){ e.preventDefault(); $("q").focus(); }
-  if (e.key === "Escape" && !$("orgPanel").hidden){ closeOrgPanel(); $("orgSelect").focus(); }
+  if (e.key === "Escape") closeAllPanels();
 });
-$("types").addEventListener("click", e => {
-  const b = e.target.closest("[data-t]"); if (!b) return;
-  if (!b.dataset.t){ state.tipo = null; state.org = null; }   // "Todos" limpa tipo e órgão
-  else state.tipo = state.tipo === b.dataset.t ? null : b.dataset.t;
-  update();
-});
-$("orgSelect").addEventListener("click", () => { $("orgPanel").hidden ? openOrgPanel() : closeOrgPanel(); });
+$("typeSelect").addEventListener("click", () => togglePanel("typeSelect", "typePanel"));
+$("orgSelect").addEventListener("click", () => togglePanel("orgSelect", "orgPanel"));
 $("orgFilterInput").addEventListener("input", filterOrgOptions);
 document.addEventListener("click", e => {
-  if (!$("orgPanel").hidden && !e.target.closest(".org-filter")) closeOrgPanel();
+  if (!e.target.closest(".dd-filter")) closeAllPanels();
 
   const c = e.target.closest("[data-clear]");
   if (c){
@@ -458,21 +461,25 @@ document.addEventListener("click", e => {
     if (k === "q" || k === "all"){ state.q = ""; $("q").value = ""; }
     if (k === "tipo" || k === "all") state.tipo = null;
     if (k === "org" || k === "all") state.org = null;
-    if (k === "fav" || k === "all") state.favOnly = false;
     update(); return;
+  }
+  const t = e.target.closest("[data-t]");
+  if (t){
+    const v = t.dataset.t || null;
+    state.tipo = state.tipo === v ? null : v;
+    closeAllPanels();
+    update();
+    return;
   }
   const o = e.target.closest("[data-o]");
   if (o){
     const v = o.dataset.o || null;
     state.org = state.org === v ? null : v;
-    closeOrgPanel();
+    closeAllPanels();
     update();
     return;
   }
-  const f = e.target.closest("[data-fav]");
-  if (f){ const id=f.dataset.fav; store.favs = store.favs.includes(id) ? store.favs.filter(x=>x!==id) : store.favs.concat(id); save(); render(); }
 });
-$("favBtn").addEventListener("click", () => { state.favOnly = !state.favOnly; update(); });
 
 $("q").value = state.q;
 renderChips(); render(); load();
