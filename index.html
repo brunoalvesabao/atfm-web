@@ -68,12 +68,27 @@ header p{margin:0;max-width:52ch;opacity:.8}
 .search-box svg{flex:none;color:var(--magenta)}
 
 .filters{margin:22px 0 8px;display:grid;gap:12px}
+.filters>div{min-width:0}
 .row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
 .row-title{font:600 .9rem "Barlow Semi Condensed",sans-serif;color:var(--muted);margin:0 0 4px}
 .chip{flex:none;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--panel)}
-.chip.org{border-style:dashed;border-color:var(--magenta);color:var(--magenta);font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;border-radius:6px}
-.chip.org[aria-pressed="true"]{background:var(--magenta);color:var(--panel);border-style:solid}
+
+.org-filter{position:relative;max-width:360px}
+.org-select{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;border:1px dashed var(--magenta);color:var(--magenta);background:var(--panel);border-radius:8px;padding:9px 12px;font:600 .92rem "Barlow Semi Condensed",sans-serif;cursor:pointer;text-align:left}
+.org-select:hover{background:var(--magenta-soft)}
+.org-select[aria-expanded="true"]{border-style:solid;background:var(--magenta-soft)}
+.org-select .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.org-select .caret{flex:none;transition:transform .15s}
+.org-select[aria-expanded="true"] .caret{transform:rotate(180deg)}
+.org-panel{position:absolute;z-index:20;top:calc(100% + 6px);left:0;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 16px 32px -18px rgba(10,20,40,.4);padding:8px;max-height:min(340px,60vh);display:flex;flex-direction:column;gap:6px}
+.org-panel[hidden]{display:none}
+.org-panel input[type="search"]{flex:none;width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--paper);color:inherit}
+.org-options{overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.org-opt{display:block;width:100%;text-align:left;border:0;background:none;border-radius:6px;padding:8px 10px;cursor:pointer;color:inherit;font:inherit}
+.org-opt:hover{background:var(--blue-soft)}
+.org-opt[aria-selected="true"]{background:var(--blue);color:var(--panel);font-weight:600}
+.org-opt[hidden]{display:none}
 
 .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px}
 .count{font-weight:600}
@@ -149,7 +164,19 @@ footer{color:var(--muted);font-size:.85rem;padding:0 0 40px;text-align:center}
 
   <section class="filters">
     <div><p class="row-title">Tipo de documento</p><div class="row" id="types"></div></div>
-    <div><p class="row-title">Órgão</p><div class="row" id="orgs"></div></div>
+    <div>
+      <p class="row-title">Órgãos</p>
+      <div class="org-filter">
+        <button type="button" class="org-select" id="orgSelect" aria-haspopup="listbox" aria-expanded="false">
+          <span class="label" id="orgSelectLabel">Todos os órgãos</span>
+          <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="org-panel" id="orgPanel" hidden>
+          <input type="search" id="orgFilterInput" placeholder="Filtrar órgão…" aria-label="Filtrar órgãos" autocomplete="off">
+          <div class="org-options" id="orgOptions" role="listbox" aria-label="Órgãos"></div>
+        </div>
+      </div>
+    </div>
     <div class="active" id="active" hidden></div>
   </section>
 
@@ -324,19 +351,39 @@ function renderActive(){
   const pills = [];
   if (state.q.trim()) pills.push(`<button class="pill" data-clear="q">Busca: <b>${esc(state.q.trim())}</b><i>✕</i></button>`);
   if (state.tipo) pills.push(`<button class="pill" data-clear="tipo">Tipo: <b>${esc(TYPES[state.tipo])}</b><i>✕</i></button>`);
-  if (state.org) pills.push(`<button class="pill" data-clear="org">Órgão: <b>${esc(state.org)}</b><i>✕</i></button>`);
+  if (state.org) pills.push(`<button class="pill" data-clear="org">Órgãos: <b>${esc(state.org)}</b><i>✕</i></button>`);
   if (state.favOnly) pills.push(`<button class="pill" data-clear="fav">Só favoritos<i>✕</i></button>`);
   $("active").hidden = !pills.length;
   $("active").innerHTML = pills.join("") + (pills.length > 1 ? `<button class="clear" data-clear="all">Limpar filtros</button>` : "");
 }
 
+function renderOrgOptions(){
+  const orgs = [...new Set(DOCS.flatMap(d => d.orgaos).concat(state.org ? [state.org] : []))].sort((a,b)=>a.localeCompare(b));
+  $("orgOptions").innerHTML = [`<button type="button" class="org-opt" data-o="" role="option" aria-selected="${!state.org}">Todos os órgãos</button>`]
+    .concat(orgs.map(o => `<button type="button" class="org-opt" data-o="${esc(o)}" role="option" aria-selected="${state.org===o}">${esc(o)}</button>`)).join("");
+}
+
+function openOrgPanel(){
+  $("orgPanel").hidden = false;
+  $("orgSelect").setAttribute("aria-expanded", "true");
+  $("orgFilterInput").value = "";
+  filterOrgOptions();
+  $("orgFilterInput").focus();
+}
+function closeOrgPanel(){
+  $("orgPanel").hidden = true;
+  $("orgSelect").setAttribute("aria-expanded", "false");
+}
+function filterOrgOptions(){
+  const q = norm($("orgFilterInput").value);
+  $("orgOptions").querySelectorAll(".org-opt").forEach(btn => { btn.hidden = !!q && !norm(btn.textContent).includes(q); });
+}
+
 function renderChips(){
   $("types").innerHTML = [`<button class="chip" data-t="" aria-pressed="${!state.tipo && !state.org}" title="Mostrar todos os documentos">Todos</button>`]
     .concat(Object.entries(TYPES).map(([k,v]) => `<button class="chip" data-t="${k}" aria-pressed="${state.tipo===k}">${v}</button>`)).join("");
-  const orgs = [...new Set(DOCS.flatMap(d => d.orgaos).concat(state.org ? [state.org] : []))].sort((a,b)=>a.localeCompare(b));
-  $("orgs").innerHTML = orgs.map(o => `<button class="chip org" data-o="${esc(o)}" aria-pressed="${state.org===o}">${esc(o)}</button>`).join("");
-  const on = $("orgs").querySelector('[aria-pressed="true"]');
-  if (on){ const row = $("orgs"); const l = on.offsetLeft - row.offsetLeft; if (l < row.scrollLeft || l + on.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollLeft = l - row.clientWidth/2 + on.offsetWidth/2; }
+  renderOrgOptions();
+  $("orgSelectLabel").textContent = state.org || "Todos os órgãos";
   $("favBtn").setAttribute("aria-pressed", state.favOnly);
   $("favBtn").classList.toggle("primary", state.favOnly);
   renderActive();
@@ -392,6 +439,7 @@ let qTimer;
 $("q").addEventListener("input", e => { state.q = e.target.value; render(); renderActive(); clearTimeout(qTimer); qTimer = setTimeout(syncURL, 400); });
 document.addEventListener("keydown", e => {
   if (e.key === "/" && !["INPUT","TEXTAREA"].includes(document.activeElement.tagName)){ e.preventDefault(); $("q").focus(); }
+  if (e.key === "Escape" && !$("orgPanel").hidden){ closeOrgPanel(); $("orgSelect").focus(); }
 });
 $("types").addEventListener("click", e => {
   const b = e.target.closest("[data-t]"); if (!b) return;
@@ -399,7 +447,11 @@ $("types").addEventListener("click", e => {
   else state.tipo = state.tipo === b.dataset.t ? null : b.dataset.t;
   update();
 });
+$("orgSelect").addEventListener("click", () => { $("orgPanel").hidden ? openOrgPanel() : closeOrgPanel(); });
+$("orgFilterInput").addEventListener("input", filterOrgOptions);
 document.addEventListener("click", e => {
+  if (!$("orgPanel").hidden && !e.target.closest(".org-filter")) closeOrgPanel();
+
   const c = e.target.closest("[data-clear]");
   if (c){
     const k = c.dataset.clear;
@@ -413,8 +465,8 @@ document.addEventListener("click", e => {
   if (o){
     const v = o.dataset.o || null;
     state.org = state.org === v ? null : v;
+    closeOrgPanel();
     update();
-    if (!o.closest("#orgs")) $("orgs").closest(".filters").scrollIntoView({behavior:"smooth", block:"nearest"});
     return;
   }
   const f = e.target.closest("[data-fav]");
